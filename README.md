@@ -34,7 +34,7 @@ rotation algorithm.
 Running
 -------
 
-See `hanoi_rotater.py -h` for documentation of command-line parameters.
+See `archive_rotater.py -h` for documentation of command-line parameters.
 
 To run doctests:
 
