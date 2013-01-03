@@ -11,7 +11,7 @@ The script is stand-alone (python 2.7 required) and tracks its state by applying
 
 See http://en.wikipedia.org/wiki/Backup_rotation_scheme
 
-https://github.com/maxharp3r/hanoi-rotater
+https://github.com/maxharp3r/archive-rotater
 
 
 Use Case
