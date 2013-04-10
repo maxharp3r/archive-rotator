@@ -7,7 +7,7 @@ The script is stand-alone (python 2.7 required) and tracks its state by applying
 
 See http://en.wikipedia.org/wiki/Backup_rotation_scheme
 
-https://github.com/maxharp3r/archive-rotater
+https://github.com/maxharp3r/archive-rotator
 
 
 Use Case
@@ -20,7 +20,7 @@ be trimmed according to a rotation algorithm, which is configurable.
 
 Example of running:
 
-    archive_rotater.py -v -n 5 /path/to/foo/mydump.tgz
+    archive_rotator.py -v -n 5 /path/to/foo/mydump.tgz
 
 This will rename mydump.tgz to something like this:
 
@@ -34,11 +34,11 @@ rotation algorithm.
 Running
 -------
 
-See `archive_rotater.py -h` for documentation of command-line parameters.
+See `archive_rotator.py -h` for documentation of command-line parameters.
 
 To run doctests:
 
-    python -m doctest -v archive_rotater.py
+    python -m doctest -v archive_rotator.py
 
 
 Algorithms
@@ -58,7 +58,7 @@ It emphasizes long history and saving disk space, but is not very tunable.
 
 Example of running:
 
-    archive_rotater.py --hanoi -v -n 6 /path/to/foo/mydump.tgz
+    archive_rotator.py --hanoi -v -n 6 /path/to/foo/mydump.tgz
 
 Given this configuration, the rotation script automatically keep at most 6 files in the rotation, rotated every 1, 2, 4,
 8, 16, and 32 runs, respectively. So, after 32 rotations, the directory will look something like this:
@@ -81,7 +81,7 @@ variety of rotation schedules.
 This algorithm, unlike the others, accepts a list of one or more `-n` configurations. Each one is a "tier". For example:
 
     # three tiers: the first will hold 6 files, the second will hold 3, the third will hold 12
-    archive_rotater.py --tiered -v -n 6 -n 3 -n 12 /path/to/foo/mydump.tgz
+    archive_rotator.py --tiered -v -n 6 -n 3 -n 12 /path/to/foo/mydump.tgz
 
 If the example above were run daily, we'd approximate 6 daily, 3 weekly, and 12 monthly backups in the rotation set.
 
@@ -105,9 +105,9 @@ algorithm will put the archive into the third tier slot for every two it puts in
 This algorithm can replicate the behavior of both FIFO and Tower of Hanoi.
 
     # FIFO with 6 slots:
-    archive_rotater.py --tiered -v -n 6 /path/to/foo/mydump.tgz
+    archive_rotator.py --tiered -v -n 6 /path/to/foo/mydump.tgz
     # hanoi with 4 slots:
-    archive_rotater.py --tiered -v -n 1 -n 1 -n 1 -n 1 /path/to/foo/mydump.tgz
+    archive_rotator.py --tiered -v -n 1 -n 1 -n 1 -n 1 /path/to/foo/mydump.tgz
 
 
 MIT License
@@ -127,3 +127,4 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
