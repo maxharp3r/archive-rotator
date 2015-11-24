@@ -157,14 +157,6 @@ class SimpleRotator(object):
             logging.info("Rotation slots are: %s" % range(num_rotation_slots))
 
     def id_to_slot(self, rotation_id):
-        """Tests:
-
-        >>> r4 = SimpleRotator(4)
-        >>> r4.id_to_slot(0)
-        0
-        >>> r4.id_to_slot(7)
-        3
-        """
         return rotation_id % self.num_rotation_slots
 
 
@@ -180,47 +172,6 @@ class HanoiRotator(object):
             logging.info("Rotation slots are: %s" % slots)
 
     def id_to_slot(self, rotation_id):
-        """Tests:
-
-        >>> r3 = HanoiRotator(3)
-        >>> r4 = HanoiRotator(4)
-        >>> r5 = HanoiRotator(5)
-        >>> r6 = HanoiRotator(6)
-
-        The first backup (id 0) should be assigned the biggest slot available: 2^(n-1)
-        >>> r3.id_to_slot(0)
-        4
-        >>> r4.id_to_slot(0)
-        8
-        >>> r5.id_to_slot(0)
-        16
-
-        >>> r4.id_to_slot(1)
-        1
-        >>> r4.id_to_slot(3)
-        1
-        >>> r4.id_to_slot(9)
-        1
-        >>> r4.id_to_slot(2)
-        2
-        >>> r4.id_to_slot(18)
-        2
-        >>> r4.id_to_slot(4)
-        4
-        >>> r4.id_to_slot(8)
-        8
-        >>> r4.id_to_slot(24)
-        8
-
-        >>> r5.id_to_slot(16)
-        16
-        >>> r5.id_to_slot(30)
-        2
-        >>> r5.id_to_slot(32)
-        16
-        >>> r6.id_to_slot(32)
-        32
-        """
         adjusted_rotation_id = rotation_id % self.max_rotation_slot
         if adjusted_rotation_id == 0:
             return self.max_rotation_slot
@@ -256,41 +207,6 @@ class TieredRotator(object):
             logging.info("Multipliers are: %s" % self.multipliers)
 
     def id_to_slot(self, rotation_id):
-        """Tests:
-
-        >>> r0 = TieredRotator([2,2])
-        >>> r0.id_to_slot(0)
-        0
-        >>> r0.id_to_slot(1)
-        1
-        >>> r0.id_to_slot(2)
-        2
-        >>> r0.id_to_slot(8)
-        2
-        >>> r0.id_to_slot(9)
-        0
-
-        >>> r1 = TieredRotator([4,3,2])
-        >>> r1.id_to_slot(0)
-        0
-        >>> r1.id_to_slot(1)
-        1
-        >>> r1.id_to_slot(4)
-        4
-        >>> r1.id_to_slot(5)
-        0
-        >>> r1.id_to_slot(19)
-        19
-        >>> r1.id_to_slot(39)
-        39
-
-        >>> r1.id_to_slot(10)
-        0
-        >>> r1.id_to_slot(24)
-        4
-        >>> r1.id_to_slot(59)
-        19
-        """
         slot = 0
         # try each tier, biggest multiple to smallest
         for i in reversed(range(self.num_tiers)):
