@@ -3,8 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Archive Rotator's documentation!
-======================================
+Archive Rotator documentation
+=============================
+
+Flexible utility for rotating backup files.
 
 Contents:
 
