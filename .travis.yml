@@ -1,0 +1,10 @@
+language: python
+
+python:
+  - "3.5"
+  - "3.4"
+  - "2.7"
+  - "pypy"
+
+script:
+  - cd ./archive-rotator && python setup.py test
