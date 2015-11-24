@@ -22,14 +22,15 @@ test_requirements = [
     # TODO: put package test requirements here
 ]
 
+# https://pypi.python.org/pypi?%3Aaction=list_classifiers
 setup(
-    name='archive_rotator',
+    name='archive-rotator',
     version='0.1.0',
     description="Flexible utility for rotating backup files.",
     long_description=readme + '\n\n' + history,
     author="Max Harper",
     author_email='maxharp3r@gmail.com',
-    url='https://github.com/maxharp3r/archive_rotator',
+    url='https://github.com/maxharp3r/archive-rotator',
     packages=[
         'archive_rotator',
     ],
@@ -37,13 +38,14 @@ setup(
                  'archive_rotator'},
     include_package_data=True,
     install_requires=requirements,
-    license="ISCL",
+    license="MIT License",
     zip_safe=False,
-    keywords='archive_rotator',
+    keywords='backup rotation',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: ISC License (ISCL)',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.6',

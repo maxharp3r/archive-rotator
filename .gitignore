@@ -4,3 +4,5 @@
 .pydevproject
 .idea
 archive-rotator.iml
+
+*.egg-info
