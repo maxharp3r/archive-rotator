@@ -2,6 +2,4 @@
 Usage
 ========
 
-To use Archive Rotator in a project::
-
-    import archive_rotator
+Run `archive-rotator -h` for documentation of command-line parameters.
