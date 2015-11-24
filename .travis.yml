@@ -7,4 +7,4 @@ python:
   - "pypy"
 
 script:
-  - cd ./archive-rotator && python setup.py test
+  - python setup.py test
