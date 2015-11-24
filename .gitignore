@@ -1,8 +1,16 @@
-*.py[cod]
 .settings
 .project
 .pydevproject
-.idea
+.idea/
 archive-rotator.iml
 
 *.egg-info
+*.py[cod]
+
+.coverage
+.tox/
+
+build/
+dist/
+docs/_build/
+htmlcov/

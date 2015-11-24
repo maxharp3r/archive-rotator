@@ -34,8 +34,12 @@ setup(
     packages=[
         'archive_rotator',
     ],
-    package_dir={'archive_rotator':
-                 'archive_rotator'},
+    package_dir={'archive_rotator': 'archive_rotator'},
+    entry_points={
+        'console_scripts': [
+            'archive-rotator = archive_rotator.archive_rotator:main',
+        ]
+    },
     include_package_data=True,
     install_requires=requirements,
     license="MIT License",
@@ -53,6 +57,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Topic :: System :: Archiving :: Backup',
     ],
     test_suite='tests',
     tests_require=test_requirements
