@@ -4,7 +4,7 @@ Flexible utility for rotating backup files.
 * Documentation: https://archive-rotator.readthedocs.org.
 * Code: https://github.com/maxharp3r/archive-rotator
 
-This utilty rotates files - typically backup archives. It offers three rotation algorithms - FIFO, Tower of Hanoi, and
+This utility rotates files - typically backup archives. It offers three rotation algorithms - FIFO, Tower of Hanoi, and
 tiered (a generalization of grandfather-father-son). It requires no configuration file, just command-line parameters.
 The script is stand-alone (python required) and tracks its state by applying a naming convention to rotated files.
 
