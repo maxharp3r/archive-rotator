@@ -2,12 +2,10 @@
 Credits
 =======
 
-Development Lead
-----------------
+Tools used in rendering this package:
 
-* Max Harper <maxharp3r@gmail.com>
+*  Cookiecutter_
+*  `cookiecutter-pypackage`_
 
-Contributors
-------------
-
-None yet. Why not be the first?
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
