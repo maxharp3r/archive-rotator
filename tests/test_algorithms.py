@@ -2,19 +2,19 @@
 # -*- coding: utf-8 -*-
 
 """
-test_archive_rotator
-----------------------------------
+test_algorithms
+---------------
 
-Tests for `archive_rotator` module.
+Tests for `archive_rotator.algorithms` module.
 """
 
 import unittest
 
-from archive_rotator.archive_rotator import \
+from archive_rotator.algorithms import \
     SimpleRotator, HanoiRotator, TieredRotator
 
 
-class TestArchiveRotator(unittest.TestCase):
+class TestAlgorithms(unittest.TestCase):
 
     def test_simple_rotator_assignment(self):
         self.assertEqual(SimpleRotator(4).id_to_slot(0), 0)

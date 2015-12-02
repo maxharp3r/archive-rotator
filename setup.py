@@ -37,7 +37,7 @@ setup(
     package_dir={'archive_rotator': 'archive_rotator'},
     entry_points={
         'console_scripts': [
-            'archive-rotator = archive_rotator.archive_rotator:main',
+            'archive-rotator = archive_rotator.cli:main',
         ]
     },
     include_package_data=True,
