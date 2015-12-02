@@ -33,7 +33,9 @@ class SimpleRotator(object):
 
 
 class HanoiRotator(object):
-    """Tower of Hanoi implementation. A backup slot is a power of two (1, 2, 4, 8, ...)."""
+    """Tower of Hanoi implementation.
+    A backup slot is a power of two (1, 2, 4, 8, ...).
+    """
 
     def __init__(self, num_rotation_slots, verbose=False):
         self.num_rotation_slots = num_rotation_slots
@@ -48,7 +50,8 @@ class HanoiRotator(object):
         if adjusted_rotation_id == 0:
             return self.max_rotation_slot
 
-        # find the maximum power of two that divides cleanly into (rotation_id % max_rotation_slot)
+        # find the maximum power of two that divides cleanly into
+        # (rotation_id % max_rotation_slot)
         max_divisor = 1
         for divisor in (2 ** n for n in range(1, self.num_rotation_slots + 1)):
             if adjusted_rotation_id % divisor == 0:
@@ -59,7 +62,10 @@ class HanoiRotator(object):
 
 
 class TieredRotator(object):
-    """Tiered rotation schedule. This is a generalization of the grandfather-father-son rotation algorithm."""
+    """Tiered rotation schedule.
+
+    This is a generalization of the grandfather-father-son rotation algorithm.
+    """
 
     def __init__(self, tier_sizes, verbose=False):
         self.num_tiers = len(tier_sizes)
@@ -67,7 +73,8 @@ class TieredRotator(object):
         self.tiers = []
         self.multipliers = []
 
-        # given a list of tier sizes, configure a list of multipliers, and a list of tiers with slots
+        # given a list of tier sizes, configure a list of multipliers,
+        # and a list of tiers with slots
         multiplier = 1
         for tier_size in tier_sizes:
             slots = [(multiplier * n) - 1 for n in range(1, tier_size + 1)]
@@ -82,14 +89,20 @@ class TieredRotator(object):
         slot = 0
         # try each tier, biggest multiple to smallest
         for i in reversed(range(self.num_tiers)):
-            # divide the rotation_id by the multiplier .. if it is equal to the multiplier-1, then we've found our slot
+            # divide the rotation_id by the multiplier .. if it is equal to
+            # the multiplier-1, then we've found our slot
             (quotient, remainder) = divmod(rotation_id, self.multipliers[i])
             if remainder == (self.multipliers[i] - 1):
-                # wrap within a tier (based on how many slots in the tier) to prevent unlimited growth
-                # the top tier is a special case - other tiers skip every nth run to promote to a higher tier
-                modifier = len(self.tiers[i]) if (i == self.biggest_tier) else len(self.tiers[i]) + 1
+                # wrap within a tier (based on how many slots in the tier) to
+                # prevent unlimited growth the top tier is a special case -
+                # other tiers skip every nth run to promote to a higher tier
+                modifier = len(self.tiers[i]) \
+                    if (i == self.biggest_tier) \
+                    else len(self.tiers[i]) + 1
                 modified_quotient = quotient % modifier
-                slot = modified_quotient * self.multipliers[i] + (self.multipliers[i] - 1)
+                slot = modified_quotient \
+                    * self.multipliers[i] \
+                    + (self.multipliers[i] - 1)
                 break
         return slot
 
@@ -103,8 +116,11 @@ def _rotated_files(path):
 
 
 def _most_recent_rotated_file_or_none(path):
-    """Looks for hanoi_rotator generated files in the passed-in path, returns the maximum rotation_id found."""
-    rotated_files = [(path, rotation_id) for (path, rotation_id) in _rotated_files(path)]
+    """Looks for hanoi_rotator generated files in the passed-in path,
+    returns the maximum rotation_id found.
+    """
+    rotated_files = [(a_path, rotation_id) for (a_path, rotation_id) in
+                     _rotated_files(path)]
     if not rotated_files:
         return None
     else:
@@ -113,7 +129,9 @@ def _most_recent_rotated_file_or_none(path):
 
 
 def _locate_files_to_delete(rotator, path, rotation_id):
-    """Looks for hanoi_rotator generated files that occupy the same slot that will be given to rotation_id."""
+    """Looks for hanoi_rotator generated files that occupy the same slot
+    that will be given to rotation_id.
+    """
     rotation_slot = rotator.id_to_slot(rotation_id)
     for a_path, a_rotation_id in [(p, n) for (p, n) in _rotated_files(path)]:
         if rotation_slot == rotator.id_to_slot(a_rotation_id):
@@ -122,16 +140,23 @@ def _locate_files_to_delete(rotator, path, rotation_id):
 
 def main():
     # command line options
-    parser = argparse.ArgumentParser(description='Move a file into a rotation of backup archives.')
+    parser = argparse.ArgumentParser(
+        description='Move a file into a rotation of backup archives.')
     parser.add_argument('path', help='Path of input file to rotate')
-    parser.add_argument('-n', '--num', dest='num_rotation_slots', type=int, action='append',
+    parser.add_argument('-n', '--num', dest='num_rotation_slots', type=int,
+                        action='append',
                         help='Max number of files in the rotation')
-    parser.add_argument('-v', '--verbose', dest='verbose', action="store_true", help='Print info messages to stdout')
-    parser.add_argument('--ext', dest='ext', default='', help='Look for and preserve the named file extension')
-    parser.add_argument('--ignore-missing', dest='ignore_missing', action="store_true",
-                        help='If the input file is missing, log and exit normally rather than exiting with an error')
+    parser.add_argument('-v', '--verbose', dest='verbose', action="store_true",
+                        help='Print info messages to stdout')
+    parser.add_argument('--ext', dest='ext', default='',
+                        help='Look for and preserve the named file extension')
+    parser.add_argument('--ignore-missing', dest='ignore_missing',
+                        action="store_true",
+                        help='If the input file is missing, log and exit '
+                             'normally rather than exiting with an error')
     parser.add_argument('--simple', dest='simple_rotator', action="store_true",
-                        help='Use the first-in-first-out rotation pattern (default)')
+                        help='Use the first-in-first-out rotation pattern '
+                             '(default)')
     parser.add_argument('--hanoi', dest='hanoi_rotator', action="store_true",
                         help='Use the Tower of Hanoi rotation pattern')
     parser.add_argument('--tiered', dest='tiered_rotator', action="store_true",
@@ -140,7 +165,8 @@ def main():
 
     # logging
     log_level = logging.INFO if args.verbose else logging.WARN
-    logging.basicConfig(stream=sys.stdout, level=log_level, format='%(message)s')
+    logging.basicConfig(stream=sys.stdout, level=log_level,
+                        format='%(message)s')
 
     # validate args
     if not args.num_rotation_slots:
@@ -149,9 +175,11 @@ def main():
         if n < 1:
             raise ValueError("Values less than one are not allowed for -n.")
     if len(args.num_rotation_slots) > 1 and not args.tiered_rotator:
-        raise ValueError("Multiple -n values not allowed with the configured rotator.")
+        raise ValueError(
+            "Multiple -n values not allowed with the configured rotator.")
     if os.path.isdir(args.path):
-        raise ValueError("The specified path (%s) is a directory, but must be a file." % args.path)
+        raise ValueError("The specified path (%s) is a directory, but must be "
+                         "a file." % args.path)
     if not os.path.isfile(args.path):
         msg = "Specified file (%s) not found; exiting." % args.path
         if args.ignore_missing:
@@ -160,9 +188,11 @@ def main():
         else:
             raise IOError(msg)
     if args.ext and args.ext[0] != ".":
-        raise ValueError("File extension (--ext) must start with the . character.")
+        raise ValueError(
+            "File extension (--ext) must start with the . character.")
     if args.ext and not args.path.endswith(args.ext):
-        raise ValueError("The file %s does not have the file extension %s" % (args.path, args.ext))
+        raise ValueError("The file %s does not have the file extension %s"
+                         % (args.path, args.ext))
 
     # build a rotator
     if args.hanoi_rotator:
@@ -176,20 +206,28 @@ def main():
         rotator = SimpleRotator(args.num_rotation_slots[0], args.verbose)
 
     # if a file extension was specified, trim it off the path
-    modified_path = args.path if not args.ext else args.path.rsplit(args.ext, 1)[0]
+    modified_path = \
+        args.path if not args.ext else args.path.rsplit(args.ext, 1)[0]
 
-    # find evidence of prior runs, reconstruct our rotation state from the file names
+    # find evidence of prior runs, reconstruct our rotation state from
+    # the file names
     dir_name, file_name = os.path.split(modified_path)
     last_rotation_id = _most_recent_rotated_file_or_none(modified_path)
-    next_rotation_id = last_rotation_id + 1 if last_rotation_id is not None else 0
-    to_delete = [p for p in _locate_files_to_delete(rotator, modified_path, next_rotation_id)]
+    next_rotation_id = \
+        last_rotation_id + 1 if last_rotation_id is not None else 0
+    to_delete = [p for p in _locate_files_to_delete(rotator, modified_path,
+                                                    next_rotation_id)]
     if args.verbose:
         rotation_slot = rotator.id_to_slot(next_rotation_id)
-        logging.info("New file: rotation_id=%s, rotation_slot=%s" % (next_rotation_id, rotation_slot))
+        logging.info("New file: rotation_id=%s, rotation_slot=%s"
+                     % (next_rotation_id, rotation_slot))
 
     # rotate in the new file
-    new_file_suffix = FILE_NAME_TMPL % \
-        {'datetime_str': datetime.now().strftime(DATETIME_FORMAT), 'rotation_id': next_rotation_id, 'ext': args.ext}
+    new_file_suffix = \
+        FILE_NAME_TMPL % \
+        {'datetime_str': datetime.now().strftime(DATETIME_FORMAT),
+         'rotation_id': next_rotation_id,
+         'ext': args.ext}
     new_path = os.path.join(dir_name, file_name + new_file_suffix)
     shutil.move(args.path, new_path)
     logging.info("Moved %s to %s" % (args.path, new_path))

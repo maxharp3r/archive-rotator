@@ -10,7 +10,8 @@ Tests for `archive_rotator` module.
 
 import unittest
 
-from archive_rotator.archive_rotator import SimpleRotator, HanoiRotator, TieredRotator
+from archive_rotator.archive_rotator import \
+    SimpleRotator, HanoiRotator, TieredRotator
 
 
 class TestArchiveRotator(unittest.TestCase):
@@ -20,7 +21,8 @@ class TestArchiveRotator(unittest.TestCase):
         self.assertEqual(SimpleRotator(4).id_to_slot(7), 3)
 
     def test_hanoi_rotator_assignment(self):
-        # The first backup (id 0) should be assigned the biggest slot available: 2^(n-1)
+        # The first backup (id 0) should be assigned the biggest slot
+        # available: 2^(n-1)
         self.assertEqual(HanoiRotator(3).id_to_slot(0), 4)
         self.assertEqual(HanoiRotator(4).id_to_slot(0), 8)
         self.assertEqual(HanoiRotator(5).id_to_slot(0), 16)
