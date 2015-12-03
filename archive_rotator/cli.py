@@ -34,7 +34,7 @@ def main():
                         help='Print info messages to stdout')
     parser.add_argument('--ext', dest='ext', default='',
                         help='Look for and preserve the named file extension')
-    parser.add_argument('--destination-dir', dest='destination_dir',
+    parser.add_argument('-d', '--destination-dir', dest='destination_dir',
                         help='Put the rotated archive in this directory.'
                              'Use if the rotated archives live in a '
                              'different directory from the source file.')

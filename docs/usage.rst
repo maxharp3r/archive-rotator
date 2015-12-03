@@ -6,8 +6,9 @@ Run `archive-rotator -h` for documentation of command-line parameters:
 ::
 
     usage: archive-rotator [-h] [-n NUM_ROTATION_SLOTS] [-v] [--ext EXT]
-                       [--ignore-missing] [--simple] [--hanoi] [--tiered]
-                       path
+                           [-d DESTINATION_DIR] [--ignore-missing] [--simple]
+                           [--hanoi] [--tiered]
+                           path
 
     Move a file into a rotation of backup archives.
 
@@ -20,8 +21,13 @@ Run `archive-rotator -h` for documentation of command-line parameters:
                             Max number of files in the rotation
       -v, --verbose         Print info messages to stdout
       --ext EXT             Look for and preserve the named file extension
+      -d DESTINATION_DIR, --destination-dir DESTINATION_DIR
+                            Put the rotated archive in this directory.Use if the
+                            rotated archives live in a different directory from
+                            the source file.
       --ignore-missing      If the input file is missing, log and exit normally
                             rather than exiting with an error
       --simple              Use the first-in-first-out rotation pattern (default)
       --hanoi               Use the Tower of Hanoi rotation pattern
       --tiered              Use the tiered rotation pattern
+
