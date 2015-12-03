@@ -31,58 +31,69 @@ def _rotated_files(path):
             yield globbed_path, int(match.group('rotation_id'))
 
 
-def _max_rotation_id(path):
-    """Looks for hanoi_rotator generated files in the passed-in path,
-    returns the maximum rotation_id found, or None if there are no
-    rotated files.
+def _next_rotation_id(rotated_files):
+    """Given the hanoi_rotator generated files in the output directory,
+    returns the rotation_id that will be given to the current file. If there
+    are no existing rotated files, return 0.
     """
-    rotated_files = list(_rotated_files(path))
     if not rotated_files:
-        return None
+        return 0
     else:
         highest_rotated_file = max(rotated_files, key=lambda x: x[1])
-        return highest_rotated_file[1]
+        return highest_rotated_file[1] + 1
 
 
-def _locate_files_to_delete(rotator, path, rotation_id):
+def _locate_files_to_delete(algorithm, rotated_files, next_rotation_id):
     """Looks for hanoi_rotator generated files that occupy the same slot
     that will be given to rotation_id.
     """
-    rotation_slot = rotator.id_to_slot(rotation_id)
-    for a_path, a_rotation_id in [(p, n) for (p, n) in _rotated_files(path)]:
-        if rotation_slot == rotator.id_to_slot(a_rotation_id):
+    rotation_slot = algorithm.id_to_slot(next_rotation_id)
+    for a_path, a_rotation_id in rotated_files:
+        if rotation_slot == algorithm.id_to_slot(a_rotation_id):
             yield a_path
+
+
+def _get_now():
+    # XXX: this is a method to support mocking in unit tests
+    return datetime.now()
+
+
+def _build_output_path(path_without_ext, ext, next_rotation_id):
+    """Build the output filename
+    """
+    # TODO: assert that ext isn't in path
+
+    dir_name, file_name = os.path.split(path_without_ext)
+    new_file_suffix = \
+        FILE_NAME_TMPL % \
+        {'datetime_str': _get_now().strftime(DATETIME_FORMAT),
+         'rotation_id': next_rotation_id,
+         'ext': ext}
+    return os.path.join(dir_name, file_name + new_file_suffix)
 
 
 def rotate(algorithm, path, ext, verbose):
     # if a file extension was specified, trim it off the path
+    # we do not try to guess file extensions, only use if explicitly configured
     path_without_ext = path if not ext else path.rsplit(ext, 1)[0]
 
-    # find evidence of prior runs, reconstruct our rotation state from
-    # the file names
-    dir_name, file_name = os.path.split(path_without_ext)
-    last_rotation_id = _max_rotation_id(path_without_ext)
-    next_rotation_id = \
-        last_rotation_id + 1 if last_rotation_id is not None else 0
-    to_delete = [p for p in _locate_files_to_delete(algorithm,
-                                                    path_without_ext,
-                                                    next_rotation_id)]
+    # reconstruct rotation state from the file names in output dir
+    rotated_files = list(_rotated_files(path_without_ext))
+    next_rotation_id = _next_rotation_id(rotated_files)
+    to_delete = list(_locate_files_to_delete(algorithm,
+                                             rotated_files,
+                                             next_rotation_id))
     if verbose:
         rotation_slot = algorithm.id_to_slot(next_rotation_id)
         logging.info("New file: rotation_id=%s, rotation_slot=%s"
                      % (next_rotation_id, rotation_slot))
 
-    # rotate in the new file
-    new_file_suffix = \
-        FILE_NAME_TMPL % \
-        {'datetime_str': datetime.now().strftime(DATETIME_FORMAT),
-         'rotation_id': next_rotation_id,
-         'ext': ext}
-    new_path = os.path.join(dir_name, file_name + new_file_suffix)
+    # rename/move the input file
+    new_path = _build_output_path(path_without_ext, ext, next_rotation_id)
     shutil.move(path, new_path)
     logging.info("Moved %s to %s" % (path, new_path))
 
-    # remove old files
+    # remove old archives
     for f in to_delete:
         os.remove(f)
         logging.info("Removed %s" % f)
@@ -90,6 +101,6 @@ def rotate(algorithm, path, ext, verbose):
     # log the set of rotated files
     if verbose:
         logging.info("Current rotation set:")
-        for f, d in _rotated_files(path_without_ext):
+        for f, d in rotated_files:
             a_rotation_slot = algorithm.id_to_slot(d)
             logging.info("- %s / slot id %s" % (f, a_rotation_slot))

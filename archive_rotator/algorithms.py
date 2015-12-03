@@ -109,4 +109,3 @@ class TieredRotator(RotatorBase):
                     + (self.multipliers[i] - 1)
                 break
         return slot
-
