@@ -21,6 +21,45 @@ FILE_NAME_TMPL = ".%(datetime_str)s.backup-%(rotation_id)d%(ext)s"
 DATETIME_FORMAT = '%Y-%m-%d-%H%M%S'
 
 
+class Paths(object):
+    """
+    Holds configuration of paths. Computes the output path.
+    """
+
+    @property
+    def full_input_path(self):
+        return os.path.join(self.input_dir, self.input_fn + self.input_ext)
+
+    @property
+    def output_path_no_ext(self):
+        return os.path.join(self.output_dir, self.input_fn)
+
+    @staticmethod
+    def _get_now():
+        # XXX: this is here to facilitate mocking in unit tests
+        return datetime.now()
+
+    def full_output_path(self, next_rotation_id):
+        suffix = \
+            FILE_NAME_TMPL % \
+            {'datetime_str': self._get_now().strftime(DATETIME_FORMAT),
+             'rotation_id': next_rotation_id,
+             'ext': self.input_ext}
+        return os.path.join(self.output_dir, self.input_fn + suffix)
+
+    def __init__(self, path, ext, destination_dir):
+        # if a file extension was specified, trim it off the path
+        # we do not try to guess extensions, only use if explicitly configured
+        path_without_ext = path if not ext else path.rsplit(ext, 1)[0]
+
+        dir_name, file_name = os.path.split(path_without_ext)
+
+        self.input_dir = dir_name
+        self.input_fn = file_name
+        self.input_ext = ext if ext else ""
+        self.output_dir = destination_dir if destination_dir else dir_name
+
+
 def _rotated_files(path):
     """Generator. Yields the next rotated file as a tuple:
     (path, rotation_id)
@@ -53,32 +92,9 @@ def _locate_files_to_delete(algorithm, rotated_files, next_rotation_id):
             yield a_path
 
 
-def _get_now():
-    # XXX: this is here to facilitate mocking in unit tests
-    return datetime.now()
-
-
-def _build_output_path(path_without_ext, ext, next_rotation_id):
-    """Build the output filename
-    """
-    assert not ext or not path_without_ext.endswith(ext)
-
-    dir_name, file_name = os.path.split(path_without_ext)
-    new_file_suffix = \
-        FILE_NAME_TMPL % \
-        {'datetime_str': _get_now().strftime(DATETIME_FORMAT),
-         'rotation_id': next_rotation_id,
-         'ext': ext}
-    return os.path.join(dir_name, file_name + new_file_suffix)
-
-
-def rotate(algorithm, path, ext, verbose):
-    # if a file extension was specified, trim it off the path
-    # we do not try to guess file extensions, only use if explicitly configured
-    path_without_ext = path if not ext else path.rsplit(ext, 1)[0]
-
+def rotate(algorithm, paths, verbose):
     # reconstruct rotation state from the file names in output dir
-    rotated_files = list(_rotated_files(path_without_ext))
+    rotated_files = list(_rotated_files(paths.output_path_no_ext))
     next_rotation_id = _next_rotation_id(rotated_files)
     to_delete = list(_locate_files_to_delete(algorithm,
                                              rotated_files,
@@ -89,9 +105,10 @@ def rotate(algorithm, path, ext, verbose):
                      % (next_rotation_id, rotation_slot))
 
     # rename/move the input file
-    new_path = _build_output_path(path_without_ext, ext, next_rotation_id)
-    shutil.move(path, new_path)
-    logging.info("Moved %s to %s" % (path, new_path))
+    from_path = paths.full_input_path
+    to_path = paths.full_output_path(next_rotation_id)
+    shutil.move(from_path, to_path)
+    logging.info("Moved %s to %s" % (from_path, to_path))
 
     # remove old archives
     for f in to_delete:
@@ -101,6 +118,6 @@ def rotate(algorithm, path, ext, verbose):
     # log the set of rotated files
     if verbose:
         logging.info("Current rotation set:")
-        for f, d in rotated_files:
+        for f, d in _rotated_files(paths.output_path_no_ext):
             a_rotation_slot = algorithm.id_to_slot(d)
             logging.info("- %s / slot id %s" % (f, a_rotation_slot))

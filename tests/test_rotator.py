@@ -22,6 +22,71 @@ def mocked_get_now():
     return datetime(2012, 1, 1, 10, 10, 10)
 
 
+class TestPaths(unittest.TestCase):
+
+    def test_path_parsing(self):
+        paths = rotator.Paths("/a/b/~c/a.b.c", "", None)
+        self.assertEqual(paths.input_dir, "/a/b/~c")
+        self.assertEqual(paths.input_fn, "a.b.c")
+        self.assertEqual(paths.input_ext, "")
+        self.assertEqual(paths.output_dir, "/a/b/~c")
+
+        paths = rotator.Paths("./a/b/~c/a.b.c", ".c", "/d/e/f/")
+        self.assertEqual(paths.input_dir, "./a/b/~c")
+        self.assertEqual(paths.input_fn, "a.b")
+        self.assertEqual(paths.input_ext, ".c")
+        self.assertEqual(paths.output_dir, "/d/e/f/")
+
+    def test_property_fields(self):
+        paths = rotator.Paths("/a/b/~c/a.b.c", "", None)
+        self.assertEqual(paths.full_input_path, "/a/b/~c/a.b.c")
+        self.assertEqual(paths.output_path_no_ext, "/a/b/~c/a.b.c")
+
+        paths = rotator.Paths("/a/b/~c/a.b.c", ".b.c", "/d/e/f/")
+        self.assertEqual(paths.full_input_path, "/a/b/~c/a.b.c")
+        self.assertEqual(paths.output_path_no_ext, "/d/e/f/a")
+
+    def test_build_output_path1(self):
+        """
+        no ext, no output dir, easy path
+        """
+        paths = rotator.Paths("foo/a.zip", "", None)
+        paths._get_now = mocked_get_now
+
+        self.assertEqual(paths.full_output_path(0),
+                         "foo/a.zip.2012-01-01-101010.backup-0")
+
+        self.assertEqual(paths.full_output_path(128),
+                         "foo/a.zip.2012-01-01-101010.backup-128")
+
+    def test_build_output_path2(self):
+        """
+        no ext, no output dir, harder path
+        """
+        paths = rotator.Paths("/a/b/~c/a.b.c", "", None)
+        paths._get_now = mocked_get_now
+        self.assertEqual(paths.full_output_path(0),
+                         "/a/b/~c/a.b.c.2012-01-01-101010.backup-0")
+
+    def test_build_output_path3(self):
+        """
+        ext, no output dir, harder path
+        """
+        paths = rotator.Paths("/a/b/~c/a.b.c", ".b.c", None)
+        paths._get_now = mocked_get_now
+        self.assertEqual(paths.full_output_path(0),
+                         "/a/b/~c/a.2012-01-01-101010.backup-0.b.c")
+
+    def test_build_output_path4(self):
+        """
+        no ext, output dir, harder path
+        """
+        paths = rotator.Paths("/a/b/~c/a.b.c", "", "/foo/bar")
+        paths._get_now = mocked_get_now
+        self.assertEqual(paths.full_output_path(0),
+                         "/foo/bar/a.b.c.2012-01-01-101010.backup-0")
+
+
 class TestRotator(unittest.TestCase):
 
     def test_finds_rotated_files(self):
@@ -68,21 +133,6 @@ class TestRotator(unittest.TestCase):
             SimpleRotator(2), rotated_files, 8))
         self.assertEqual(len(to_delete), 2)
 
-    def test_build_output_path(self):
-        # patch datetime.now()
-        rotator._get_now = mocked_get_now
-
-        self.assertEqual(rotator._build_output_path("/foo/a.zip", "", 0),
-                         "/foo/a.zip.2012-01-01-101010.backup-0")
-
-        self.assertEqual(rotator._build_output_path("/foo/a.zip", "", 128),
-                         "/foo/a.zip.2012-01-01-101010.backup-128")
-
-        self.assertEqual(rotator._build_output_path("/a/b/~c/a.b.c", "", 0),
-                         "/a/b/~c/a.b.c.2012-01-01-101010.backup-0")
-
-        self.assertEqual(rotator._build_output_path("/foo/a", ".zip", 0),
-                         "/foo/a.2012-01-01-101010.backup-0.zip")
 
 if __name__ == '__main__':
     import sys
