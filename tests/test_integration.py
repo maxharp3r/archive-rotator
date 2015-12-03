@@ -47,36 +47,34 @@ class IntegrationTest(unittest.TestCase):
         with make_temp_directory() as temp_dir:
             self.assertEqual(num_archives(temp_dir), 0)
             for i in range(3):
-                paths = rotator.Paths(create_test_archive(temp_dir), "", None)
-                rotator.rotate(SimpleRotator(5), paths, False)
+                rotator.rotate(SimpleRotator(5), create_test_archive(temp_dir))
             self.assertEqual(num_archives(temp_dir), 3)
             for i in range(100):
-                paths = rotator.Paths(create_test_archive(temp_dir), "", None)
-                rotator.rotate(SimpleRotator(5), paths, False)
+                rotator.rotate(SimpleRotator(5), create_test_archive(temp_dir))
             self.assertEqual(num_archives(temp_dir), 5)
 
     def test_integration_with_ext(self):
         with make_temp_directory() as temp_dir:
             self.assertEqual(num_archives(temp_dir), 0)
             for i in range(3):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT, None)
-                rotator.rotate(SimpleRotator(20), paths, False)
+                rotator.rotate(
+                    SimpleRotator(20), create_test_archive(temp_dir), EXT)
             self.assertEqual(num_archives(temp_dir), 3)
             for i in range(100):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT, None)
-                rotator.rotate(SimpleRotator(20), paths, False)
+                rotator.rotate(
+                    SimpleRotator(20), create_test_archive(temp_dir), EXT)
             self.assertEqual(num_archives(temp_dir), 20)
 
     def test_integration_with_hanoi(self):
         with make_temp_directory() as temp_dir:
             self.assertEqual(num_archives(temp_dir), 0)
             for i in range(3):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT, None)
-                rotator.rotate(HanoiRotator(20), paths, False)
+                rotator.rotate(
+                    HanoiRotator(20), create_test_archive(temp_dir), EXT)
             self.assertEqual(num_archives(temp_dir), 3)
             for i in range(100):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT, None)
-                rotator.rotate(HanoiRotator(20), paths, False)
+                rotator.rotate(
+                    HanoiRotator(20), create_test_archive(temp_dir), EXT)
             # 1, 2, 4, 8, 16, 32, 64, 128 (first archive gets 128)
             self.assertEqual(num_archives(temp_dir), 8)
 
@@ -86,15 +84,17 @@ class IntegrationTest(unittest.TestCase):
             self.assertEqual(num_archives(temp_dir), 0)
             self.assertEqual(num_archives(temp_output_dir), 0)
             for i in range(3):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT,
-                                      temp_output_dir)
-                rotator.rotate(SimpleRotator(5), paths, False)
+                rotator.rotate(SimpleRotator(5),
+                               create_test_archive(temp_dir),
+                               EXT,
+                               temp_output_dir)
             self.assertEqual(num_archives(temp_dir), 0)
             self.assertEqual(num_archives(temp_output_dir), 3)
             for i in range(100):
-                paths = rotator.Paths(create_test_archive(temp_dir), EXT,
-                                      temp_output_dir)
-                rotator.rotate(SimpleRotator(5), paths, False)
+                rotator.rotate(SimpleRotator(5),
+                               create_test_archive(temp_dir),
+                               EXT,
+                               temp_output_dir)
             self.assertEqual(num_archives(temp_dir), 0)
             self.assertEqual(num_archives(temp_output_dir), 5)
 

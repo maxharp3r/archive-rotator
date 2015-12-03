@@ -92,7 +92,7 @@ def _locate_files_to_delete(algorithm, rotated_files, next_rotation_id):
             yield a_path
 
 
-def rotate(algorithm, paths, verbose):
+def _move_files(algorithm, paths, verbose):
     # reconstruct rotation state from the file names in output dir
     rotated_files = list(_rotated_files(paths.output_path_no_ext))
     next_rotation_id = _next_rotation_id(rotated_files)
@@ -121,3 +121,18 @@ def rotate(algorithm, paths, verbose):
         for f, d in _rotated_files(paths.output_path_no_ext):
             a_rotation_slot = algorithm.id_to_slot(d)
             logging.info("- %s / slot id %s" % (f, a_rotation_slot))
+
+
+def rotate(algorithm, path, ext="", destination_dir=None, verbose=False):
+    """
+    Programmatic access to the archive rotator
+
+    :param algorithm: an instance of BaseRotator from algorithms.py
+    :param path: full path to input file
+    :param ext: (optional) file extension to preserve
+    :param destination_dir: (optional) different location for output file
+    :param verbose: (optional) print more to stdout
+    :return: nothing
+    """
+    paths = Paths(path, ext, destination_dir)
+    _move_files(algorithm, paths, verbose)

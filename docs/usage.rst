@@ -1,9 +1,18 @@
-========
+=====
 Usage
-========
+=====
 
-Run `archive-rotator -h` for documentation of command-line parameters:
-::
+Command Line
+------------
+
+Say we wish to rotate `/files/website-backup.zip` daily.
+Let's use the tower of hanoi algorithm, to balance recency and longevity.
+We do this::
+
+    archive-rotator -v --hanoi -n 8 --ext ".zip" /files/website-backup.zip
+
+
+For documentation of command-line parameters, run `archive-rotator -h`::
 
     usage: archive-rotator [-h] [-n NUM_ROTATION_SLOTS] [-v] [--ext EXT]
                            [-d DESTINATION_DIR] [--ignore-missing] [--simple]
@@ -30,4 +39,15 @@ Run `archive-rotator -h` for documentation of command-line parameters:
       --simple              Use the first-in-first-out rotation pattern (default)
       --hanoi               Use the Tower of Hanoi rotation pattern
       --tiered              Use the tiered rotation pattern
+
+
+Programmatic
+------------
+
+You can rotate files from python. Example::
+
+    from archive_rotator import rotator
+    from archive_rotator.algorithms import SimpleRotator
+
+    rotator.rotate(SimpleRotator(5), "/my/path/foo.tar.gz", ".tar.gz", verbose=True)
 

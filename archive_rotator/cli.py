@@ -104,8 +104,8 @@ def main():
         algorithm = SimpleRotator(args.num_rotation_slots[0], args.verbose)
 
     # go!
-    paths = rotator.Paths(args.path, args.ext, args.destination_dir)
-    rotator.rotate(algorithm, paths, args.verbose)
+    rotator.rotate(algorithm, args.path, args.ext, args.destination_dir,
+                   args.verbose)
 
 
 if __name__ == '__main__':
