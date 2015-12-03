@@ -27,11 +27,13 @@ class TestRotator(unittest.TestCase):
     def test_finds_rotated_files(self):
         rotated_files = list(rotator._rotated_files("tests/test_dir_a/mydump"))
         self.assertEqual(len(rotated_files), 5)
+
+        # no guaranteed order to the globbing, so this cannot verify exactly
         first_path, first_rotation_id = rotated_files[0]
-        self.assertEqual(
+        self.assertRegexpMatches(
             first_path,
-            "tests/test_dir_a/mydump.2015-12-02-161558.backup-3.tgz")
-        self.assertEqual(first_rotation_id, 3)
+            "tests\/test_dir_a\/mydump.*2015-12-02.*\.backup-[3-7].*")
+        self.assertGreaterEqual(first_rotation_id, 3)
 
     def test_rotated_files_respects_name(self):
         # there are no files matching "another_name"
