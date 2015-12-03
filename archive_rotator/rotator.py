@@ -31,12 +31,12 @@ def _rotated_files(path):
             yield globbed_path, int(match.group('rotation_id'))
 
 
-def _most_recent_rotated_file_or_none(path):
+def _max_rotation_id(path):
     """Looks for hanoi_rotator generated files in the passed-in path,
-    returns the maximum rotation_id found.
+    returns the maximum rotation_id found, or None if there are no
+    rotated files.
     """
-    rotated_files = [(a_path, rotation_id) for (a_path, rotation_id) in
-                     _rotated_files(path)]
+    rotated_files = list(_rotated_files(path))
     if not rotated_files:
         return None
     else:
@@ -61,7 +61,7 @@ def rotate(algorithm, path, ext, verbose):
     # find evidence of prior runs, reconstruct our rotation state from
     # the file names
     dir_name, file_name = os.path.split(path_without_ext)
-    last_rotation_id = _most_recent_rotated_file_or_none(path_without_ext)
+    last_rotation_id = _max_rotation_id(path_without_ext)
     next_rotation_id = \
         last_rotation_id + 1 if last_rotation_id is not None else 0
     to_delete = [p for p in _locate_files_to_delete(algorithm,
