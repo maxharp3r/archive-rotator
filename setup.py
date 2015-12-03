@@ -25,7 +25,7 @@ test_requirements = [
 # https://pypi.python.org/pypi?%3Aaction=list_classifiers
 setup(
     name='archive-rotator',
-    version='0.2.0',
+    version='0.2.1',
     description="Flexible utility for rotating backup files.",
     long_description=readme + '\n\n' + history,
     author="Max Harper",
