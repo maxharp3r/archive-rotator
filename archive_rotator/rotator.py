@@ -54,14 +54,14 @@ def _locate_files_to_delete(algorithm, rotated_files, next_rotation_id):
 
 
 def _get_now():
-    # XXX: this is a method to support mocking in unit tests
+    # XXX: this is here to facilitate mocking in unit tests
     return datetime.now()
 
 
 def _build_output_path(path_without_ext, ext, next_rotation_id):
     """Build the output filename
     """
-    # TODO: assert that ext isn't in path
+    assert not ext or not path_without_ext.endswith(ext)
 
     dir_name, file_name = os.path.split(path_without_ext)
     new_file_suffix = \
